@@ -609,3 +609,22 @@ func TestHoneycombOutputWithResource(t *testing.T) {
 	assert.Equal(int64(underlay), mainEventFields["b"])
 	assert.Equal(int64(middle), mainEventFields["c"])
 }
+
+func TestSampleRate(t *testing.T) {
+	mockHoneycomb := &libhoney.MockOutput{}
+
+	tr, err := setUpTestExporter(mockHoneycomb)
+	assert.NoError(t, err)
+
+	ctx, span := tr.Start(context.TODO(), "mySpanWithNoSampleRate")
+	span.End()
+
+	ctx, span = tr.Start(ctx, "mySpanWithSampleRate")
+	span.SetAttributes(core.Key("sampler.rate").Uint(37))
+	span.End()
+
+	assert.Len(t, mockHoneycomb.Events(), 2)
+
+	assert.Equal(t, uint(1), mockHoneycomb.Events()[0].SampleRate)
+	assert.Equal(t, uint(37), mockHoneycomb.Events()[1].SampleRate)
+}

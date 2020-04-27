@@ -32,6 +32,7 @@ import (
 
 const (
 	defaultDataset = "opentelemetry"
+	samplerRate    = "sampler.rate"
 )
 
 // Config defines the basic configuration for the Honeycomb exporter.
@@ -536,6 +537,9 @@ func (e *Exporter) ExportSpan(ctx context.Context, data *trace.SpanData) {
 	}
 
 	for _, kv := range data.Attributes {
+		if kv.Key == samplerRate {
+			ev.SampleRate = uint(kv.Value.AsUint32())
+		}
 		ev.AddField(string(kv.Key), kv.Value.AsInterface())
 	}
 
