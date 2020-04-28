@@ -373,7 +373,7 @@ func NewExporter(config Config, opts ...ExporterOption) (*Exporter, error) {
 	// Developer note: bump this with each release
 	// TODO: Stamp this via a variable set at link time with a value derived
 	// from the current VCS tag.
-	const versionStr = "0.4.0"
+	const versionStr = "0.4.0-sample-rate-1"
 
 	if len(config.APIKey) == 0 {
 		return nil, errors.New("API key must not be empty")
@@ -406,6 +406,7 @@ func NewExporter(config Config, opts ...ExporterOption) (*Exporter, error) {
 	}
 	if econf.debug {
 		libhoneyConfig.Logger = &libhoney.DefaultLogger{}
+		libhoneyConfig.Logger.Printf("Running version %s", versionStr)
 	}
 
 	if err := libhoney.Init(libhoneyConfig); err != nil {
